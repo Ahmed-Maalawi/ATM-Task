@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Modules\Customer\Entities\Account;
+use Modules\Customer\Entities\Card;
+use Modules\Customer\Entities\Transaction;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -43,4 +46,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function cards()
+    {
+        return $this->hasMany(Card::class);
+    }
+
+    public function accounts()
+    {
+        return $this->hasMany(Account::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }
