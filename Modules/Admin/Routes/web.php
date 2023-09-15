@@ -11,6 +11,13 @@
 |
 */
 
-Route::prefix('admin')->group(function() {
-    Route::get('/', 'AdminController@index');
+use Illuminate\Support\Facades\Route;
+use Modules\Admin\Http\Controllers\TransactionController;
+
+Route::prefix('admin')->middleware('role:admin')->group(function() {
+    Route::get('/dashboard', 'AdminController@index');
+
+    Route::group(['prefix' => 'transaction', 'controller' => TransactionController::class], function () {
+       Route::get('/all', 'index')->name('admin.transaction.all');
+    });
 });

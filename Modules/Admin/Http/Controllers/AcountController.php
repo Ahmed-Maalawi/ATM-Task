@@ -2,15 +2,11 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Customer\Entities\Account;
-use Modules\Customer\Entities\Card;
-use Modules\Customer\Entities\Transaction;
 
-class AdminController extends Controller
+class AcountController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,13 +14,7 @@ class AdminController extends Controller
      */
     public function index()
     {
-
-        $report['clients'] = User::role('customer')->count();
-        $report['accounts'] = Account::count();
-        $report['cards'] = Card::count();
-        $report['transaction'] = Transaction::count();
-
-        return view('admin::index', ['report' => $report]);
+        return view('admin::index');
     }
 
     /**

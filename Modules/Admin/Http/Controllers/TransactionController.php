@@ -2,15 +2,14 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Customer\Entities\Account;
-use Modules\Customer\Entities\Card;
 use Modules\Customer\Entities\Transaction;
+use Yajra\DataTables\Facades\DataTables;
 
-class AdminController extends Controller
+class TransactionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,13 +17,8 @@ class AdminController extends Controller
      */
     public function index()
     {
-
-        $report['clients'] = User::role('customer')->count();
-        $report['accounts'] = Account::count();
-        $report['cards'] = Card::count();
-        $report['transaction'] = Transaction::count();
-
-        return view('admin::index', ['report' => $report]);
+        $transactions = Transaction::latest()->get();
+        return DataTables::of($transactions)->addIndexColumn()->toJson();
     }
 
     /**
@@ -84,6 +78,23 @@ class AdminController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            if(request()->ajax())
+            {
+                $transaction = Transaction::findOrFail($id);
+
+                $transaction->delete();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'transaction deleted'
+                ], 200);
+            }
+        } catch (\Exception $e){
+            throw new HttpResponseException(response()->json([
+                'success' => false,
+                'message' => 'transaction id not found'
+            ], 404));
+        }
     }
 }
