@@ -3,20 +3,19 @@
 namespace Modules\Customer\Http\Controllers;
 
 use Carbon\Carbon;
+use http\Env\Response;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\Customer\Entities\Transaction;
+use Modules\Customer\Http\Requests\TransactionRequest;
 use Yajra\DataTables\Facades\DataTables;
 
 
 class TransactionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
+
     public function index(Request $request)
     {
         $data = Transaction::where('user_id', Auth::id())->latest()->take(5)->get();
@@ -36,23 +35,30 @@ class TransactionController extends Controller
             ->toJson();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
+
     public function create()
     {
         return view('customer::create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
+
+    public function store(TransactionRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $transaction = Transaction::create([
+            'type' => $validated['type'],
+            'amount' => $validated['amount'],
+            'account_id' => $validated['account_id'],
+            'user_id' => Auth::id(),
+        ]);
+
+        if ($transaction) {
+            return response()->json([
+                'success' => true,
+                'message' => 'transaction created',
+            ], 201);
+        }
     }
 
     /**

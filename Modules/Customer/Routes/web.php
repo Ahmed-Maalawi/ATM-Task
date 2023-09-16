@@ -12,6 +12,7 @@
 */
 
 use Illuminate\Support\Facades\Route;
+use Modules\Customer\Http\Controllers\AccountController;
 use Modules\Customer\Http\Controllers\CardController;
 use Modules\Customer\Http\Controllers\TransactionController;
 
@@ -22,6 +23,14 @@ Route::prefix('customer')->middleware('role:customer')->group(function() {
 
     Route::middleware(['permission:make transaction'])->group(function (){
         Route::get('/', 'CustomerController@index')->name('customer.dashboard');
+        Route::get('account/{account:id}', 'CustomerController@showAccount')->name('customer.account.show');
+
+        Route::group(['prefix' => 'account', 'controller' => AccountController::class], function() {
+            Route::get('/', 'index')->name('customer.account.all');
+            Route::get('/get-balance/{id}', 'show')->name('customer.account.balance');
+
+        });
+
 
         Route::group(['controller' => TransactionController::class, 'prefix' => 'transaction'], function (){
             Route::get('all', 'index')->name('client.transaction');

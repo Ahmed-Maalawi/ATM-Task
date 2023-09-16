@@ -19,5 +19,6 @@ Route::prefix('admin')->middleware('role:admin')->group(function() {
 
     Route::group(['prefix' => 'transaction', 'controller' => TransactionController::class], function () {
        Route::get('/all', 'index')->name('admin.transaction.all');
+       Route::delete('/delete/{id}', 'destroy')->name('admin.transaction.delete');
     });
 });
