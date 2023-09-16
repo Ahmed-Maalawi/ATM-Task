@@ -3,11 +3,11 @@
 namespace Modules\Customer\Http\Controllers;
 
 use Carbon\Carbon;
-use http\Env\Response;
-use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Modules\Customer\Entities\Account;
 use Modules\Customer\Entities\Transaction;
 use Modules\Customer\Http\Requests\TransactionRequest;
 use Yajra\DataTables\Facades\DataTables;
@@ -36,69 +36,50 @@ class TransactionController extends Controller
     }
 
 
-    public function create()
-    {
-        return view('customer::create');
-    }
-
-
     public function store(TransactionRequest $request)
     {
-        $validated = $request->validated();
+            $validated = $request->validated();
 
-        $transaction = Transaction::create([
-            'type' => $validated['type'],
-            'amount' => $validated['amount'],
-            'account_id' => $validated['account_id'],
-            'user_id' => Auth::id(),
-        ]);
+            $account = Account::findOrFail($validated['account_id']);
+            $amount = floatval($validated['amount']);
 
-        if ($transaction) {
+            if ($request->input('type') === 'withdraw') {
+
+                if ($account['balance'] < $amount) {
+                    throw new HttpResponseException(response()->json([
+                        'success' => false,
+                        'errors' => [
+                            'account balance' => [
+                                'Insufficient account balance.'
+                            ]
+                        ]
+                    ],422));
+                }
+
+                $account['balance'] -= $amount;
+
+            } else {
+                $account['balance'] += $amount;
+            }
+
+
+            if (!$account->save()) {
+                throw new HttpResponseException(response()->json([
+                    'success' => false,
+                    'error' => 'An error occurred while the transaction performed'
+                ]));
+            }
+
+            $transaction = Transaction::create([
+                'type' => $validated['type'],
+                'amount' => $validated['amount'],
+                'account_id' => $validated['account_id'],
+                'user_id' => Auth::id(),
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'transaction created',
             ], 201);
-        }
-    }
-
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
-    {
-        return view('customer::show');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('customer::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

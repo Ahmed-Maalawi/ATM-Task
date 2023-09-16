@@ -28,16 +28,12 @@ Route::prefix('customer')->middleware('role:customer')->group(function() {
         Route::group(['prefix' => 'account', 'controller' => AccountController::class], function() {
             Route::get('/', 'index')->name('customer.account.all');
             Route::get('/get-balance/{id}', 'show')->name('customer.account.balance');
-
         });
-
 
         Route::group(['controller' => TransactionController::class, 'prefix' => 'transaction'], function (){
             Route::get('all', 'index')->name('client.transaction');
-//           Route::get('client-transaction', 'client.transaction');
+           Route::post('store', 'store')->name('client.transaction.store')->middleware('transaction.limit');
         });
     });
-
-
 
 });
