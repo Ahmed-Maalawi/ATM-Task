@@ -14,7 +14,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Admin\Http\Controllers\TransactionController;
 
-Route::prefix('admin')->middleware('role:admin')->group(function() {
+Route::prefix('admin')->middleware(['role:admin', 'auth'])->group(function() {
     Route::get('/dashboard', 'AdminController@index');
 
     Route::group(['prefix' => 'transaction', 'controller' => TransactionController::class], function () {

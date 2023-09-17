@@ -16,7 +16,7 @@ use Modules\Customer\Http\Controllers\AccountController;
 use Modules\Customer\Http\Controllers\CardController;
 use Modules\Customer\Http\Controllers\TransactionController;
 
-Route::prefix('customer')->middleware('role:customer')->group(function() {
+Route::prefix('customer')->middleware(['role:customer', 'auth'])->group(function() {
 
     Route::get('card-verification', [CardController::class,'validationCard'])->name('card.validation');
     Route::post('card-validation', [CardController::class,'cardValidated'])->name('card.verify');

@@ -104,7 +104,7 @@
                                 <div class="d-flex align-items-end justify-content-between mt-4">
                                     <div>
                                         <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="{{ $report['transaction'] }}">0</span> Transaction </h4>
-                                        <a href="index.html" class="text-decoration-underline">Withdraw money</a>
+                                        <a href="#" class="text-decoration-underline">Withdraw money</a>
                                     </div>
                                     <div class="avatar-sm flex-shrink-0">
                                         <span class="avatar-title bg-primary-subtle rounded fs-3">
